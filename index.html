@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pet Tracker Test</title>
+    <title>Dashboard Pet Tracker - Momo</title>
     
     <!-- Pustaka CSS Leaflet.js -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -20,8 +20,48 @@
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; }
-        header { background-color: var(--primary-color); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--secondary-color); }
+
+        /* --- STYLING HALAMAN LOGIN --- */
+        #login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 85vh;
+        }
+        .login-card {
+            background-color: var(--card-bg);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            border-top: 6px solid var(--primary-color);
+        }
+        .login-card h2 { color: var(--primary-color); margin-bottom: 5px; text-align: center; }
+        .login-card p { color: #7f8c8d; font-size: 0.9rem; text-align: center; margin-bottom: 25px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input {
+            width: 100%; padding: 12px; border: 1px solid #bdc3c7; border-radius: 6px; font-size: 1rem;
+        }
+        .btn-login {
+            width: 100%; background-color: var(--primary-color); color: white; border: none;
+            padding: 12px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer;
+            margin-top: 10px; transition: 0.3s;
+        }
+        .btn-login:hover { background-color: #1a252f; }
+        #login-error {
+            color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 12px; display: none;
+        }
+
+        /* --- STYLING DASHBOARD UTAMA --- */
+        #dashboard-container { display: none; }
+        header { background-color: var(--primary-color); color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--secondary-color); flex-wrap: wrap; gap: 10px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
         .status-badge { background-color: var(--success); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+        .btn-logout { background-color: var(--danger); color: white; border: none; padding: 7px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .btn-logout:hover { background-color: #c0392b; }
+
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
         .card { background-color: var(--card-bg); border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
@@ -44,113 +84,259 @@
 </head>
 <body>
 
-    <header>
-        <div>
-            <h1>Dashboard Pemantauan ESP32-C3</h1>
-            <p>Target: Momo | Node Gateway: ESP32 di rumah</p>
-        </div>
-        <div class="status-badge">● Koneksi LoRa Stabil</div>
-    </header>
-
-    <div class="dashboard-grid">
-        <div class="card">
-            <h2>🌍 Pemantauan Geografis (ATGM336H)</h2>
-            <!-- Div ini akan digantikan oleh Peta Leaflet -->
-            <div id="map"></div>
-            
-            <div class="gps-data">
-                <div><span>Latitude</span><strong id="lat-display">-6.311452</strong></div>
-                <div><span>Longitude</span><strong id="lon-display">106.793121</strong></div>
-                <div><span>Pembaruan Terakhir</span><strong>10:45:22 WIB</strong></div>
-            </div>
-        </div>
-
-        <div>
-            <div class="card" style="margin-bottom: 20px;">
-                <h2>📡 Kualitas Sinyal LoRa (RFM95W)</h2>
-                <div class="qos-grid">
-                    <div class="qos-item"><span>RSSI Rata-rata</span><h3>-85 dBm</h3></div>
-                    <div class="qos-item"><span>SNR</span><h3>9.2 dB</h3></div>
-                    <div class="qos-item"><span>PDR (Success)</span><h3>98.5 %</h3></div>
-                    <div class="qos-item"><span>PLR (Loss)</span><h3>1.5 %</h3></div>
+    <!-- ================= 1. TAMPILAN LOGIN ================= -->
+    <div id="login-container">
+        <div class="login-card">
+            <h2>🐾 Login Pet Tracker</h2>
+            <p>Sistem Pemantauan ESP32-C3 & LoRa</p>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email Pengguna</label>
+                    <input type="email" id="email" placeholder="Masukkan email..." required>
                 </div>
-            </div>
+                <div class="form-group">
+                    <label for="password">Kata Sandi</label>
+                    <input type="password" id="password" placeholder="Masukkan password..." required>
+                </div>
+                <button type="submit" class="btn-login" id="login-btn">Masuk ke Dashboard</button>
+                <div id="login-error">Email atau kata sandi salah!</div>
+            </form>
+        </div>
+    </div>
 
+    <!-- ================= 2. TAMPILAN DASHBOARD ================= -->
+    <div id="dashboard-container">
+        <header>
+            <div>
+                <h1>Dashboard Pemantauan ESP32-C3</h1>
+                <p>Target: Momo | Node Gateway: ESP32 di rumah | Akun: <strong id="user-email-display">-</strong></p>
+            </div>
+            <div class="header-right">
+                <div class="status-badge" id="connection-badge">● Terhubung ke Supabase</div>
+                <button class="btn-logout" onclick="handleLogout()">Keluar</button>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
             <div class="card">
-                <h2>⚙️ Kontrol Node Transmitter</h2>
-                <div class="battery-status">
-                    <span>Daya Baterai (LiPo 500mAh + TP4057)</span>
-                    <strong>82%</strong>
+                <h2>🌍 Pemantauan Geografis (ATGM336H)</h2>
+                <div id="map"></div>
+                
+                <div class="gps-data">
+                    <div><span>Latitude</span><strong id="lat-display">-6.325010</strong></div>
+                    <div><span>Longitude</span><strong id="lon-display">106.825900</strong></div>
+                    <div><span>Pembaruan Terakhir</span><strong id="time-display">Menunggu data...</strong></div>
                 </div>
-                <button class="btn-buzzer" onclick="alert('Instruksi dikirim via LoRa: Buzzer Aktif!')">🚨 Aktifkan Buzzer</button>
+            </div>
+
+            <div>
+                <div class="card" style="margin-bottom: 20px;">
+                    <h2>📡 Kualitas Sinyal LoRa (RFM95W)</h2>
+                    <div class="qos-grid">
+                        <div class="qos-item"><span>RSSI Rata-rata</span><h3 id="rssi-display">- dBm</h3></div>
+                        <div class="qos-item"><span>SNR</span><h3 id="snr-display">- dB</h3></div>
+                        <div class="qos-item"><span>PDR (Success)</span><h3 id="pdr-display">- %</h3></div>
+                        <div class="qos-item"><span>PLR (Loss)</span><h3 id="plr-display">- %</h3></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>⚙️ Kontrol Node Transmitter</h2>
+                    <div class="battery-status">
+                        <span>Estimasi Daya Baterai (LiPo 500mAh)</span>
+                        <strong>82%</strong>
+                    </div>
+                    <button class="btn-buzzer" id="buzzer-btn" onclick="toggleBuzzer()">🚨 Aktifkan Buzzer</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Leaflet.js -->
+    <!-- Pustaka Leaflet.js & Supabase JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-      // koordinat awal
-        const startLat = -6.32501;
+        // =================================================================
+        // 1. KONFIGURASI SUPABASE (Project Base URL & Anon Key)
+        // =================================================================
+        const SUPABASE_URL = 'https://zfecxalgawzmvtuhibzn.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpmZWN4YWxnYXd6bXZ0dWhpYnpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIwNTE4NzcsImV4cCI6MjEwNzYyNzg3N30.NdbFsZAVmfvQgcm2-FxfrH353UuoiElpVmTeGOyr3s4';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // =================================================================
+        // 2. INISIALISASI PETA LEAFLET
+        // =================================================================
+        const startLat = -6.325010;
         const startLon = 106.825900;
         const map = L.map('map').setView([startLat, startLon], 18);
 
-        // Muat peta dasar dari OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Inisialisasi marker untuk target pelacakan
         const boyMomoMarker = L.marker([startLat, startLon]).addTo(map);
-        boyMomoMarker.bindPopup("<b>Posisi kucing</b><br>simulasi GPS.").openPopup();
+        boyMomoMarker.bindPopup("<b>Posisi Momo</b><br>Menunggu data GPS dari ESP32...").openPopup();
 
-        // Variabel penyimpan posisi terakhir
-        let currentLat = startLat;
-        let currentLon = startLon;
+        // =================================================================
+        // 3. SISTEM AUTENTIKASI (LOGIN & LOGOUT)
+        // =================================================================
+        const loginContainer = document.getElementById('login-container');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
 
-        // Fungsi penghasil pergerakan koordinat acak
-        function simulatePetMovement(lat, lon, maxOffset = 0.0002) {
-            const randomLat = lat + (Math.random() - 0.5) * maxOffset;
-            const randomLon = lon + (Math.random() - 0.5) * maxOffset;
-            return [randomLat, randomLon];
+        function showDashboard(userEmail) {
+            loginContainer.style.display = 'none';
+            dashboardContainer.style.display = 'block';
+            document.getElementById('user-email-display').innerText = userEmail;
+
+            // Refresh ukuran peta setelah kontainer tampil
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 200);
+
+            fetchLatestData();
+            fetchInitialBuzzerState();
         }
 
-        // Fungsi untuk menghasilkan nilai metrik LoRa acak
-        function randomQoS(min, max, decimals = 1) {
-            const num = Math.random() * (max - min) + min;
-            return num.toFixed(decimals);
+        async function checkUserSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                showDashboard(session.user.email);
+            }
+        }
+        checkUserSession();
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginError.style.display = 'none';
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('login-btn');
+            btn.innerText = 'Memeriksa akun...';
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            btn.innerText = 'Masuk ke Dashboard';
+
+            if (error) {
+                loginError.innerText = 'Gagal masuk: ' + error.message;
+                loginError.style.display = 'block';
+            } else if (data.user) {
+                showDashboard(data.user.email);
+            }
+        });
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            dashboardContainer.style.display = 'none';
+            loginContainer.style.display = 'flex';
+            document.getElementById('password').value = '';
         }
 
-        // Auto-refresh interval setiap 3 detik
-        setInterval(() => {
-            // 1. Kalkulasi pergerakan geografis baru
-            const [newLat, newLon] = simulatePetMovement(currentLat, currentLon);
-            currentLat = newLat;
-            currentLon = newLon;
+        // =================================================================
+        // 4. UPDATE TAMPILAN REAL-TIME DARI ESP32 GATEWAY -> SUPABASE
+        // =================================================================
+        function updateDashboardUI(data) {
+            if (!data) return;
 
-            // Geser marker dan pusatkan ulang kamera Leaflet
-            boyMomoMarker.setLatLng([currentLat, currentLon]);
-            map.panTo([currentLat, currentLon]);
+            const newLat = parseFloat(data.latitude);
+            const newLon = parseFloat(data.longitude);
+            boyMomoMarker.setLatLng([newLat, newLon]);
+            boyMomoMarker.setPopupContent(`<b>Posisi Momo</b><br>Lat: ${newLat.toFixed(6)}<br>Lon: ${newLon.toFixed(6)}`);
+            map.panTo([newLat, newLon]);
 
-            // 2. Perbarui teks koordinat di panel antarmuka
-            document.getElementById('lat-display').innerText = currentLat.toFixed(6);
-            document.getElementById('lon-display').innerText = currentLon.toFixed(6);
+            document.getElementById('lat-display').innerText = newLat.toFixed(6);
+            document.getElementById('lon-display').innerText = newLon.toFixed(6);
 
-            // 3. Perbarui metrik kualitas sinyal komunikasi LoRa (Dummy)
-            // Rentang RSSI LoRa ideal: -60 dBm s/d -120 dBm
-            document.querySelector('.qos-grid .qos-item:nth-child(1) h3').innerText = randomQoS(-120, -60, 0) + ' dBm';
+            const waktu = new Date(data.created_at).toLocaleTimeString('id-ID') + ' WIB';
+            document.getElementById('time-display').innerText = waktu;
+
+            document.getElementById('rssi-display').innerText = `${data.rssi} dBm`;
+            document.getElementById('snr-display').innerText = `${Number(data.snr).toFixed(1)} dB`;
+            document.getElementById('pdr-display').innerText = `${Number(data.pdr).toFixed(1)} %`;
+            document.getElementById('plr-display').innerText = `${Number(data.plr).toFixed(1)} %`;
+        }
+
+        // Ambil 1 data telemetri terakhir saat halaman dibuka
+        async function fetchLatestData() {
+            const { data, error } = await supabaseClient
+                .from('telemetry_logs')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (!error && data) {
+                updateDashboardUI(data);
+            }
+        }
+
+        // Subscribe ke perubahan INSERT baru pada tabel telemetry_logs
+        supabaseClient
+            .channel('realtime-telemetry')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'telemetry_logs' }, (payload) => {
+                console.log('Data masuk dari ESP32 Gateway:', payload.new);
+                updateDashboardUI(payload.new);
+            })
+            .subscribe((status) => {
+                const badge = document.getElementById('connection-badge');
+                if (status === 'SUBSCRIBED') {
+                    badge.innerText = '● Realtime Aktif';
+                    badge.style.backgroundColor = '#27ae60';
+                }
+            });
+
+        // =================================================================
+        // 5. SINKRONISASI KONTROL TOMBOL BUZZER (WEB <-> SUPABASE <-> ESP32)
+        // =================================================================
+        let isBuzzerOn = false;
+
+        function updateBuzzerButtonUI() {
+            const btn = document.getElementById('buzzer-btn');
+            if (isBuzzerOn) {
+                btn.innerText = '🔕 Matikan Buzzer (Aktif)';
+                btn.style.backgroundColor = '#27ae60';
+            } else {
+                btn.innerText = '🚨 Aktifkan Buzzer';
+                btn.style.backgroundColor = '#e74c3c';
+            }
+        }
+
+        // Cek status terakhir buzzer di database saat web baru dimuat
+        async function fetchInitialBuzzerState() {
+            const { data, error } = await supabaseClient
+                .from('device_control')
+                .select('buzzer_active')
+                .eq('id', 1)
+                .single();
+
+            if (!error && data) {
+                isBuzzerOn = data.buzzer_active;
+                updateBuzzerButtonUI();
+            }
+        }
+
+        async function toggleBuzzer() {
+            isBuzzerOn = !isBuzzerOn;
+            updateBuzzerButtonUI();
             
-            // Rentang SNR LoRa ideal: -20 dB s/d +10 dB
-            document.querySelector('.qos-grid .qos-item:nth-child(2) h3').innerText = randomQoS(-15, 10, 1) + ' dB';
-            
-            // Asumsi PDR tinggi (>90%) dan PLR sisa dari PDR
-            const currentPDR = randomQoS(90, 100, 1);
-            const currentPLR = (100 - currentPDR).toFixed(1);
-            document.querySelector('.qos-grid .qos-item:nth-child(3) h3').innerText = currentPDR + ' %';
-            document.querySelector('.qos-grid .qos-item:nth-child(4) h3').innerText = currentPLR + ' %';
-            
-        }, 3000);
+            const { error } = await supabaseClient
+                .from('device_control')
+                .update({ buzzer_active: isBuzzerOn, updated_at: new Date().toISOString() })
+                .eq('id', 1);
+
+            if (error) {
+                alert('Gagal mengirim perintah Buzzer: ' + error.message);
+                isBuzzerOn = !isBuzzerOn;
+                updateBuzzerButtonUI();
+            }
+        }
     </script>
 </body>
 </html>
